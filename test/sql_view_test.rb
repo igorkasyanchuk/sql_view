@@ -1,15 +1,25 @@
 require_relative "./test_helper"
 
 class SqlViewTest < ActiveSupport::TestCase
-  # test 'simple DSL' do
-  # end
+  setup do
+    OldUserView.sql_view.up
+    AnotherView.sql_view.up
+  end
 
-  test 'model view materialzied' do
+  teardown do
+    OldUserView.sql_view.down
+    AnotherView.sql_view.down
+  end
+
+  test 'basics' do
     assert_equal "another_views", AnotherView.view_name
     assert_equal "all_old_users", OldUserView.view_name
 
-    OldUserView.sql_view.up
+    assert AnotherView.model.new.readonly?
+    assert OldUserView.model.new.readonly?
+  end
 
+  test 'model view materialzied' do
     assert_equal 0, OldUserView.model.count
 
     a = User.create(age: 42)
@@ -19,22 +29,15 @@ class SqlViewTest < ActiveSupport::TestCase
     b = User.create(age: 5)
     OldUserView.sql_view.refresh
     assert_equal 1, OldUserView.model.count
-
-    assert_equal [a.id], OldUserView.model.pluck(:id)
-
-    OldUserView.sql_view.down
+    assert_equal [a.id], OldUserView.model.ordered.pluck(:id)
   end
 
   test 'model view NOT materialzied' do
-    AnotherView.sql_view.up
-
     assert_equal 0, AnotherView.model.count
     User.create(age: 42)
     assert_equal 0, AnotherView.model.count
     User.create(age: 18)
     assert_equal 1, AnotherView.model.count
-
-    AnotherView.sql_view.down
   end
 
   # test 'migration' do

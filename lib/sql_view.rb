@@ -34,8 +34,8 @@ module SqlView
       self.sql_view_options[:sql_or_proc] = sql_or_proc
     end
 
-    def self.extend_with(&block)
-      self.sql_view_options[:extend_with] = block
+    def self.extend_model_with(&block)
+      self.sql_view_options[:extend_model_with] = block
     end
   end
 
@@ -88,7 +88,9 @@ module SqlView
         self.table_name = parent.view_name
         self.inheritance_column = nil
       end
-      klass.class_eval(&parent.sql_view_options[:extend_with]) if parent.sql_view_options[:extend_with].present?
+      if parent.sql_view_options[:extend_model_with].present?
+        klass.class_eval(&parent.sql_view_options[:extend_model_with])
+      end
       klass
     end
   end

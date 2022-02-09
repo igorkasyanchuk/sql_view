@@ -5,7 +5,7 @@ class OldUserView < SqlView::Model
 
   schema -> { User.where("age > 18") }
 
-  extend_with do
+  extend_model_with do
     scope :ordered, -> { order(:id) }
   end
 end
