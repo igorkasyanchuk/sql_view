@@ -1,0 +1,26 @@
+# verify port 5432 or 5433
+# sudo -u postgres psql
+# create role myapp with createdb login password 'password1';
+# \quit
+# ALTER ROLE myapp      WITH SUPERUSER;
+
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  host: localhost
+  pool: 20
+  port: 5433
+  username: myapp
+  password: password1
+
+development:
+  <<: *default
+  database: sql_view_range_development
+
+test:
+  <<: *default
+  database: sql_view_range_test<%= ENV['TEST_ENV_NUMBER'] %>
+
+production:
+  <<: *default
+  database: sql_view_range_development
