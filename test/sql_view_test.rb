@@ -11,6 +11,10 @@ class SqlViewTest < ActiveSupport::TestCase
     AnotherView.sql_view.down
   end
 
+  test 'view from app' do
+    assert_equal 0, ActiveAccountView.model.count
+  end
+
   test 'basics' do
     assert_equal "another_views", AnotherView.view_name
     assert_equal "all_old_users", OldUserView.view_name

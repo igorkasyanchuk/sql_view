@@ -10,10 +10,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_02_09_202244) do
+ActiveRecord::Schema.define(version: 2022_02_10_123453) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "accounts", force: :cascade do |t|
+    t.string "name"
+    t.boolean "active"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
 
   create_table "users", force: :cascade do |t|
     t.string "name"
@@ -23,4 +30,14 @@ ActiveRecord::Schema.define(version: 2022_02_09_202244) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
+
+  create_view "active_account_views", sql_definition: <<-SQL
+      SELECT accounts.id,
+      accounts.name,
+      accounts.active,
+      accounts.created_at,
+      accounts.updated_at
+     FROM accounts
+    WHERE (accounts.active = true);
+  SQL
 end

@@ -21,6 +21,10 @@ Or install it yourself as:
 $ gem install sql_view
 ```
 
+## Testing
+
+`ruby ./test/sql_view_test.rb` (because somehow `rake test` not works, not critical for now)
+
 ## Contributing
 Contribution directions go here.
 

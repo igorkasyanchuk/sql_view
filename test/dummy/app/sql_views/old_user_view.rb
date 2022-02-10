@@ -3,7 +3,7 @@ class OldUserView < SqlView::Model
 
   materialized
 
-  schema -> { User.where("age > 18") }
+  schema -> {  User.where("age > 18") }
 
   extend_model_with do
     scope :ordered, -> { order(:id) }

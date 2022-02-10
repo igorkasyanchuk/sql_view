@@ -58,6 +58,7 @@ module SqlView
       CREATE #{materialized_or_not} VIEW #{parent.view_name} AS
       #{view_sql.respond_to?(:to_sql) ? view_sql.to_sql : view_sql };
     SQL
+      puts sql if Rails.env.development?
       ActiveRecord::Base.connection.execute sql#.wp
     end
 
@@ -65,6 +66,7 @@ module SqlView
       sql = <<-SQL
       drop #{materialized_or_not} view if exists #{parent.view_name};
     SQL
+      puts sql if Rails.env.development?
       ActiveRecord::Base.connection.execute sql#.wp
     end
 
@@ -96,66 +98,3 @@ module SqlView
   end
 
 end
-
-  # it 'has dsl' do
-  #   Dsl.schema do
-  #     materialized_view "short_view" do
-  #       source do
-  #         User
-  #       end
-  #       extend_model_with do
-  #         scope :ordered, -> { order(:id) }
-  #       end
-  #       migration do
-  #         User.order(:login)
-  #       end
-  #     end
-  #   end
-  # end
-
-  
-  # class Dsl
-  #   include Singleton
-
-  #   delegate_missing_to :instance
-
-  #   def self.schema(&block)
-  #     instance.class_eval(&block)
-  #   end
-
-  #   def self.materialized_view(name, &block)
-  #     puts name
-  #     block.call
-  #   end
-
-  #   def self.extend_model_with(&block)
-  #     puts 111
-  #   end
-
-  #   def self.migration(&block)
-  #     puts 222
-  #   end
-  # end
-
-  
-  # class Collection
-  #   include Singleton
-
-  #   attr_reader :models
-
-  #   def initialize
-  #     reset
-  #   end
-
-  #   def [](name)
-  #     models[name]
-  #   end
-
-  #   def reset
-  #     @models = {}
-  #   end
-
-  #   def register_view(name, options = {}, &block)
-  #     models[name] = SqlView.new(name, *options, &block)
-  #   end
-  # end

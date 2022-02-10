@@ -3,6 +3,7 @@ PATH
   specs:
     sql_view (0.1.0)
       rails
+      scenic
 
 GEM
   remote: https://rubygems.org/
@@ -145,6 +146,9 @@ GEM
       thor (~> 1.0)
       zeitwerk (~> 2.5)
     rake (13.0.6)
+    scenic (1.5.5)
+      activerecord (>= 4.0.0)
+      railties (>= 4.0.0)
     strscan (3.0.1)
     thor (1.2.1)
     timeout (0.2.0)
@@ -163,6 +167,7 @@ PLATFORMS
 DEPENDENCIES
   pg
   pry
+  scenic
   sql_view!
   wrapped_print
 
