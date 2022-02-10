@@ -3,7 +3,6 @@ PATH
   specs:
     sql_view (0.1.0)
       rails
-      scenic
 
 GEM
   remote: https://rubygems.org/

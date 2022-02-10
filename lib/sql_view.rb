@@ -1,13 +1,24 @@
-require 'singleton'
+require "singleton"
+require_relative "./sql_view/schema_dumper.rb"
+require_relative "./sql_view/statements.rb"
 require "sql_view/version"
 require "sql_view/railtie"
 
 module SqlView
+  # mattr_accessor :klasses
+  # @@klasses = {}
+
   class Model
     class_attribute :view, :sql_view_options
 
+    class << self
+      delegate_missing_to :model
+    end
+
     def self.inherited(subclass)
+      # puts subclass
       subclass.sql_view_options = {}
+      # SqlView.klasses[subclass] = subclass.sql_view
     end
 
     def self.view_name=(name)
@@ -38,7 +49,6 @@ module SqlView
       self.sql_view_options[:extend_model_with] = block
     end
   end
-
 
   class Migration
     attr_reader :parent

@@ -3,26 +3,42 @@ require "rails/generators/active_record"
 
 module SqlView
   module Generators
-    # @api private
     class ViewGenerator < Rails::Generators::NamedBase
       include Rails::Generators::Migration
-      source_root File.expand_path("templates", __dir__)
 
-      def create_views_directory
-        unless views_directory_path.exist?
-          empty_directory(views_directory_path)
-        end
-      end
+      class_option :"view-name", type: :string, default: nil
+      class_option :materialized, type: :boolean, default: false
 
-      def create_view_definition
-        create_file definition.path
-      end
+      def create_everything
+        create_file "app/sql_views/#{file_name}_view.rb", <<-FILE
+class #{class_name}View < SqlView::Model
+#{top_code}
 
-      def create_migration_file
-        migration_template(
-          "db/migrate/create_view.erb",
-          "db/migrate/create_#{plural_file_name}.rb",
-        )
+  schema -> {#{schema_code} }
+
+  extend_model_with do
+    # sample how you can extend it, similar to regular AR model
+    #
+    # belongs_to :user
+    # has_many :posts
+    #
+    # scope :ordered, -> { order(:created_at) }
+    # scope :by_role, ->(role) { where(role: role) }
+  end
+end
+FILE
+
+        create_file "db/migrate/#{self.class.next_migration_number("db/migrate")}_create_#{file_name}s_view.rb", <<-FILE
+class #{migration_class_name} < #{activerecord_migration_class}
+  def up
+    #{class_name}View.sql_view.up
+  end
+
+  def down
+    #{class_name}View.sql_view.down
+  end
+end
+FILE
       end
 
       def self.next_migration_number(dir)
@@ -30,8 +46,24 @@ module SqlView
       end
 
       no_tasks do
+        def top_code
+          [view_name_code, materialized_code].compact.join("\n\n")
+        end
+
+        def view_name_code
+          options["view-name"] ? "  self.view_name = '#{options["view-name"]}'" : nil
+        end
+
+        def materialized_code
+          options[:materialized] ? "  materialized" : nil
+        end
+
+        def schema_code
+          " #{args[0].presence || "\n    # ActiveRecord::Relation or SQL\n    # for example: User.where(active: true)\n " }"
+        end
+
         def migration_class_name
-          "Create#{class_name.tr('.', '').pluralize}"
+          "Create#{class_name.tr('.', '').pluralize}View"
         end
 
         def activerecord_migration_class
@@ -51,25 +83,6 @@ module SqlView
         super.tr(".", "_")
       end
 
-      def views_directory_path
-        @views_directory_path ||= Rails.root.join("db", "views")
-      end
-
-      def formatted_plural_name
-        if plural_name.include?(".")
-          "\"#{plural_name}\""
-        else
-          ":#{plural_name}"
-        end
-      end
-
-      def create_view_options
-        if materialized?
-          ", materialized: #{no_data? ? '{ no_data: true }' : true}"
-        else
-          ""
-        end
-      end
     end
   end
 end

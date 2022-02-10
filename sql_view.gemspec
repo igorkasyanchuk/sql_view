@@ -17,7 +17,6 @@ Gem::Specification.new do |spec|
   end
 
   spec.add_dependency "rails"
-  spec.add_dependency "scenic"
 
   spec.add_development_dependency "pg"
   spec.add_development_dependency "pry"
