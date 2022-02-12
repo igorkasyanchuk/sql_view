@@ -4,9 +4,16 @@ require_relative "./sql_view/statements.rb"
 require "sql_view/version"
 require "sql_view/railtie"
 
+#
+#
+# TODO for now in a single file
+#
+#
+
 module SqlView
-  # mattr_accessor :klasses
-  # @@klasses = {}
+  def SqlView.log(message)
+    puts message
+  end
 
   class Model
     class_attribute :view, :sql_view_options
@@ -16,9 +23,7 @@ module SqlView
     end
 
     def self.inherited(subclass)
-      # puts subclass
       subclass.sql_view_options = {}
-      # SqlView.klasses[subclass] = subclass.sql_view
     end
 
     def self.view_name=(name)
@@ -57,6 +62,22 @@ module SqlView
       @parent = parent
     end
 
+    # recreate view
+    # TODO normal refresh
+    # def refresh_materialized_view(name, concurrently: false, cascade: false)
+    #   raise_unless_materialized_views_supported
+
+    #   if cascade
+    #     refresh_dependencies_for(name, concurrently: concurrently)
+    #   end
+
+    #   if concurrently
+    #     raise_unless_concurrent_refresh_supported
+    #     execute "REFRESH MATERIALIZED VIEW CONCURRENTLY #{quote_table_name(name)};"
+    #   else
+    #     execute "REFRESH MATERIALIZED VIEW #{quote_table_name(name)};"
+    #   end
+    # end
     def refresh
       down
       up
@@ -66,25 +87,25 @@ module SqlView
       view_sql = parent.sql_view_options[:sql_or_proc].call
       raise "Please configure schema for #{parent} (association or SQL) for the view" if view_sql.to_s == ""
       sql = <<-SQL
-      CREATE #{materialized_or_not} VIEW #{parent.view_name} AS
+      CREATE #{materialized_or_not}VIEW #{parent.view_name} AS
       #{view_sql.respond_to?(:to_sql) ? view_sql.to_sql : view_sql };
     SQL
-      puts sql if Rails.env.development?
+      SqlView.log sql
       ActiveRecord::Base.connection.execute sql#.wp
     end
 
     def down
       sql = <<-SQL
-      drop #{materialized_or_not} view if exists #{parent.view_name};
+      DROP #{materialized_or_not}VIEW IF EXISTS #{parent.view_name};
     SQL
-      puts sql if Rails.env.development?
+      SqlView.log sql
       ActiveRecord::Base.connection.execute sql#.wp
     end
 
     private
 
     def materialized_or_not
-      parent.sql_view_options[:materialized] ? "MATERIALIZED" : nil
+      parent.sql_view_options[:materialized] ? "MATERIALIZED " : nil
     end
 
   end
