@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_02_10_181859) do
+ActiveRecord::Schema.define(version: 2022_02_12_105622) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -31,24 +31,37 @@ ActiveRecord::Schema.define(version: 2022_02_10_181859) do
   end
 
 
-    create_sql_view "active_account_views", sql: <<-SQL
-      CREATE  VIEW "active_account_views" AS
-         SELECT accounts.id,
+  create_sql_view "active_account_views", sql: <<-SQL
+    CREATE  VIEW "active_account_views" AS
+       SELECT accounts.id,
       accounts.name,
       accounts.active,
       accounts.created_at,
       accounts.updated_at
      FROM accounts
     WHERE (accounts.active = true);
-    SQL
-    create_sql_view "deleted_account_views", sql: <<-SQL
-      CREATE  MATERIALIZED  VIEW "deleted_account_views" AS
-         SELECT accounts.id,
+  SQL
+
+  create_sql_view "deleted_account_views", sql: <<-SQL
+    CREATE  MATERIALIZED  VIEW "deleted_account_views" AS
+       SELECT accounts.id,
       accounts.name,
       accounts.active,
       accounts.created_at,
       accounts.updated_at
      FROM accounts
     WHERE (1 = 0);
-    SQL
+  SQL
+
+  create_sql_view "bulgaria_views", sql: <<-SQL
+    CREATE  MATERIALIZED  VIEW "bulgaria_views" AS
+       SELECT users.id,
+      users.name,
+      users.country,
+      users.age,
+      users.created_at,
+      users.updated_at
+     FROM users;
+  SQL
+
 end

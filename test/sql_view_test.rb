@@ -11,6 +11,10 @@ class SqlViewTest < ActiveSupport::TestCase
     AnotherView.sql_view.down
   end
 
+  test 'empty schema' do
+    assert_raise { AView.sql_view.up }
+  end
+
   test 'view from app' do
     assert_equal 0, ActiveAccountView.model.count
   end

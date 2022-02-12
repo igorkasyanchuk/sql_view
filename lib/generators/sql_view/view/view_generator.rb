@@ -14,10 +14,12 @@ module SqlView
 class #{class_name}View < SqlView::Model
 #{top_code}
 
-  schema -> {#{schema_code} }
+  schema -> #{schema_code}
 
   extend_model_with do
     # sample how you can extend it, similar to regular AR model
+    #
+    # include SomeConcern
     #
     # belongs_to :user
     # has_many :posts
@@ -28,7 +30,7 @@ class #{class_name}View < SqlView::Model
 end
 FILE
 
-        create_file "db/migrate/#{self.class.next_migration_number("db/migrate")}_create_#{file_name}s_view.rb", <<-FILE
+        create_file "db/migrate/#{self.class.next_migration_number("db/migrate")}_create_#{file_name}_view.rb", <<-FILE
 class #{migration_class_name} < #{activerecord_migration_class}
   def up
     #{class_name}View.sql_view.up
@@ -59,11 +61,15 @@ FILE
         end
 
         def schema_code
-          " #{args[0].presence || "\n    # ActiveRecord::Relation or SQL\n    # for example: User.where(active: true)\n " }"
+          if args[0].present?
+            "{ #{args[0]} }"
+          else
+            " { #{ "\n    # ActiveRecord::Relation or SQL\n    # for example: User.where(active: true)\n  }" }"
+          end
         end
 
         def migration_class_name
-          "Create#{class_name.tr('.', '').pluralize}View"
+          "Create#{class_name.tr('.', '')}View"
         end
 
         def activerecord_migration_class

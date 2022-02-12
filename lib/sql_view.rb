@@ -64,6 +64,7 @@ module SqlView
 
     def up
       view_sql = parent.sql_view_options[:sql_or_proc].call
+      raise "Please configure schema for #{parent} (association or SQL) for the view" if view_sql.to_s == ""
       sql = <<-SQL
       CREATE #{materialized_or_not} VIEW #{parent.view_name} AS
       #{view_sql.respond_to?(:to_sql) ? view_sql.to_sql : view_sql };
@@ -103,6 +104,13 @@ module SqlView
       if parent.sql_view_options[:extend_model_with].present?
         klass.class_eval(&parent.sql_view_options[:extend_model_with])
       end
+      # to use e.associations.count for example
+      # because of the error undefined scan for nil class
+      klass.class_eval %Q{
+        def self.name
+          "#{parent.class}"
+        end
+      }
       klass
     end
   end

@@ -6,22 +6,22 @@ module SqlView
   # @api private
   module SchemaDumper
     class DBView < OpenStruct
+      def to_schema
+        <<-DEFINITION
+  create_sql_view "#{self.viewname}", sql: <<-\SQL
+    CREATE #{materialized_or_not} VIEW "#{self.viewname}" AS
+    #{escaped_definition.indent(2)}
+  SQL\n
+        DEFINITION
+      end
 
+      private
       def materialized?
         self.kind == "m"
       end
 
       def materialized_or_not
         materialized? ? " MATERIALIZED " : nil
-      end
-
-      def to_schema
-        <<-DEFINITION
-    create_sql_view "#{self.viewname}", sql: <<-\SQL
-      CREATE #{materialized_or_not} VIEW "#{self.viewname}" AS
-      #{escaped_definition.indent(2)}
-    SQL
-        DEFINITION
       end
 
       def escaped_definition
@@ -40,14 +40,22 @@ module SqlView
       end
 
       dumpable_views_in_database.each do |viewname|
+        next if already_indexed?(viewname)
         view = DBView.new(get_view_info(viewname))
-        #puts view.to_schema
         stream.puts(view.to_schema)
-        #indexes(view.name, stream)
+        indexes(viewname, stream)
       end
     end
 
     private
+
+    # make sure view was added one time, because somehow was adding views two times
+    def already_indexed?(viewname)
+      @already_indexed ||= []
+      return true if @already_indexed.include?(viewname)
+      @already_indexed << viewname
+      false
+    end
 
     def dumpable_views_in_database
       @dumpable_views_in_database ||= ActiveRecord::Base.connection.views.reject do |viewname|
