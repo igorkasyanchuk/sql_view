@@ -62,42 +62,32 @@ module SqlView
       @parent = parent
     end
 
-    # recreate view
-    # TODO normal refresh
-    # def refresh_materialized_view(name, concurrently: false, cascade: false)
-    #   raise_unless_materialized_views_supported
-
-    #   if cascade
-    #     refresh_dependencies_for(name, concurrently: concurrently)
-    #   end
-
-    #   if concurrently
-    #     raise_unless_concurrent_refresh_supported
-    #     execute "REFRESH MATERIALIZED VIEW CONCURRENTLY #{quote_table_name(name)};"
-    #   else
-    #     execute "REFRESH MATERIALIZED VIEW #{quote_table_name(name)};"
-    #   end
-    # end
-    def refresh
-      down
-      up
+    def refresh(concurrently: false)
+      concurrently_or_not = concurrently ? " CONCURRENTLY " : " "
+      sql = <<-SQL
+      REFRESH#{materialized_or_not}VIEW#{concurrently_or_not}#{parent.view_name};
+      SQL
+      execute(sql)
     end
 
     def up
       view_sql = parent.sql_view_options[:sql_or_proc].call
       raise "Please configure schema for #{parent} (association or SQL) for the view" if view_sql.to_s == ""
       sql = <<-SQL
-      CREATE #{materialized_or_not}VIEW #{parent.view_name} AS
+      CREATE#{materialized_or_not}VIEW #{parent.view_name} AS
       #{view_sql.respond_to?(:to_sql) ? view_sql.to_sql : view_sql };
     SQL
-      SqlView.log sql
-      ActiveRecord::Base.connection.execute sql#.wp
+      execute(sql)
     end
 
     def down
       sql = <<-SQL
-      DROP #{materialized_or_not}VIEW IF EXISTS #{parent.view_name};
+      DROP#{materialized_or_not}VIEW IF EXISTS #{parent.view_name};
     SQL
+      execute(sql)
+    end
+
+    def execute(sql)
       SqlView.log sql
       ActiveRecord::Base.connection.execute sql#.wp
     end
@@ -105,7 +95,7 @@ module SqlView
     private
 
     def materialized_or_not
-      parent.sql_view_options[:materialized] ? "MATERIALIZED " : nil
+      parent.sql_view_options[:materialized] ? " MATERIALIZED " : " "
     end
 
   end

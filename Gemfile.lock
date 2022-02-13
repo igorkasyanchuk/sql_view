@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    sql_view (0.0.2)
+    sql_view (0.0.3)
       rails
 
 GEM
@@ -83,7 +83,7 @@ GEM
     i18n (1.8.11)
       concurrent-ruby (~> 1.0)
     io-wait (0.2.1)
-    loofah (2.13.0)
+    loofah (2.14.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
     mail (2.7.1)

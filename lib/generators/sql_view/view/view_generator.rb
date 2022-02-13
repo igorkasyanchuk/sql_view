@@ -14,7 +14,7 @@ module SqlView
 class #{class_name}View < SqlView::Model
 #{top_code}
 
-  schema -> #{schema_code}
+  schema ->#{schema_code}
 
   extend_model_with do
     # sample how you can extend it, similar to regular AR model
@@ -62,9 +62,9 @@ FILE
 
         def schema_code
           if args[0].present?
-            "{ #{args[0]} }"
+            " { #{args[0]} }"
           else
-            " { #{ "\n    # ActiveRecord::Relation or SQL\n    # for example: User.where(active: true)\n  }" }"
+            " {#{ "\n    # ActiveRecord::Relation or SQL\n    # for example: User.where(active: true)\n  }" }"
           end
         end
 
