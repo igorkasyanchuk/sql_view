@@ -25,6 +25,8 @@ class SqlViewTest < ActiveSupport::TestCase
 
     assert AnotherView.model.new.readonly?
     assert OldUserView.model.new.readonly?
+
+    assert_equal 42, AnotherView.model.new.test_instance_method
   end
 
   test 'model view materialzied' do
@@ -46,6 +48,17 @@ class SqlViewTest < ActiveSupport::TestCase
     assert_equal 0, AnotherView.model.count
     User.create(age: 18)
     assert_equal 1, AnotherView.model.count
+  end
+
+  test 'sti' do
+    anna = Mother.create(name: "Anna")
+    assert "Anna", MontherAnnaView.model.first.name
+  end
+
+  test 'polymorphic' do
+    anna = Mother.create(name: "Anna")
+    worker = Worker.create(title: "BOSS", jobable: anna)
+    assert anna, ActiveWorkerView.model.first.jobable
   end
 
   # test 'migration' do

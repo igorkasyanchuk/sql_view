@@ -11,7 +11,7 @@ module SqlView
 
       def create_everything
         create_file "app/sql_views/#{file_name}_view.rb", <<-FILE
-class #{class_name}View < SqlView::Model
+class #{class_name}View < SQLView::Model
 #{top_code}
 
   schema ->#{schema_code}

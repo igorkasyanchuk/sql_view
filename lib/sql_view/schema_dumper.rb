@@ -100,3 +100,5 @@ module SqlView
     end
   end
 end
+
+SQLView = SqlView

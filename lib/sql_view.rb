@@ -7,6 +7,7 @@ require "sql_view/railtie"
 #
 #
 # TODO for now in a single file
+# move to separate files
 #
 #
 

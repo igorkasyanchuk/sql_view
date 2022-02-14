@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_02_12_105622) do
+ActiveRecord::Schema.define(version: 2022_02_14_211243) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -22,10 +22,25 @@ ActiveRecord::Schema.define(version: 2022_02_12_105622) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
+  create_table "parents", force: :cascade do |t|
+    t.string "name"
+    t.string "type"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "name"
     t.string "country"
     t.integer "age"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "workers", force: :cascade do |t|
+    t.string "title"
+    t.integer "jobable_id"
+    t.string "jobable_type"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end
@@ -62,6 +77,28 @@ ActiveRecord::Schema.define(version: 2022_02_12_105622) do
       users.created_at,
       users.updated_at
      FROM users;
+  SQL
+
+  create_sql_view "monther_anna_views", sql: <<-SQL
+    CREATE  VIEW "monther_anna_views" AS
+       SELECT parents.id,
+      parents.name,
+      parents.type,
+      parents.created_at,
+      parents.updated_at
+     FROM parents
+    WHERE ((parents.type)::text = 'Mother'::text);
+  SQL
+
+  create_sql_view "active_worker_views", sql: <<-SQL
+    CREATE  VIEW "active_worker_views" AS
+       SELECT workers.id,
+      workers.title,
+      workers.jobable_id,
+      workers.jobable_type,
+      workers.created_at,
+      workers.updated_at
+     FROM workers;
   SQL
 
 end
