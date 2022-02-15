@@ -52,10 +52,12 @@ end
 
 or the same but materialized:
 
+```ruby
 class ActiveUserView < SQLView::Model
   materiaized
   schema -> { "SELECT * FROM users WHERE active = TRUE" }
 end
+```
 
 Later with view you can work same way as with any model(ActiveRecord class). For example:
 
