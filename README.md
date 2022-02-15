@@ -17,7 +17,7 @@ rails g sql_view:view DeletedProject 'Project.only_deleted'
 rails g sql_view:view ActiveUsers 'User.confirmed.where(active: true)' --materialized
 ```
 
-Depending on whether you need a materialized view or not add `--materialized` flag (later you can change in "view" class).
+Depending on whether you need a materialized view or not add `--materialized` flag (later you can change in "view" class). Materialized views works in Postgres.
 
 Generator will create a file similar to:
 
