@@ -91,6 +91,14 @@ class OldUserView < SqlView::Model
 end
 ```
 
+## TODO
+
+- CI with different versions of Rails/Ruby
+- make unit tests works with `rake test`
+- `cascade` option
+- move classes to own files
+- code coverage
+
 ## Testing
 
 `ruby ./test/sql_view_test.rb` (because somehow `rake test` not works, not critical for now)
