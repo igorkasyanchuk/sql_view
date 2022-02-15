@@ -116,6 +116,8 @@ end
 - `cascade` option
 - move classes to own files
 - code coverage
+- verify how it works with other DB's
+- check if schema was changed on migrate or schema dump?
 
 ## Testing
 
