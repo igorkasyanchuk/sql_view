@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_02_14_211243) do
+ActiveRecord::Schema.define(version: 2022_02_15_124409) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -99,6 +99,18 @@ ActiveRecord::Schema.define(version: 2022_02_14_211243) do
       workers.created_at,
       workers.updated_at
      FROM workers;
+  SQL
+
+  create_sql_view "active_user_views", sql: <<-SQL
+    CREATE  MATERIALIZED  VIEW "active_user_views" AS
+       SELECT users.id,
+      users.name,
+      users.country,
+      users.age,
+      users.created_at,
+      users.updated_at
+     FROM users
+    WHERE ((users.age >= 18) AND (users.age <= 60));
   SQL
 
 end
