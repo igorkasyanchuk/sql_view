@@ -41,14 +41,21 @@ class ActiveUserView < SQLView::Model
 end
 ```
 
-or if you want to use SQL to create a view:
+or if you want to use SQL to create a regular view:
 
 
 ```ruby
 class ActiveUserView < SQLView::Model
-  schema -> { "SELECT * FROM USERS WHERE active = TRUE" }
+  schema -> { "SELECT * FROM users WHERE active = TRUE" }
 end
 ```
+
+or the same but materialized:
+
+class ActiveUserView < SQLView::Model
+  materiaized
+  schema -> { "SELECT * FROM users WHERE active = TRUE" }
+end
 
 Later with view you can work same way as with any model(ActiveRecord class). For example:
 
