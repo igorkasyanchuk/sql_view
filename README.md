@@ -13,7 +13,7 @@ Production-ready.
 The most simple way to add a view is to call a generator (examples below):
 
 ```bash
-rails g sql_view:view DeletedProject 'Project.only_deleted'
+rails g sql_view:view DeletedProjects 'Project.only_deleted'
 rails g sql_view:view ActiveUsers 'User.confirmed.where(active: true)' --materialized
 ```
 
