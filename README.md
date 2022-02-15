@@ -4,6 +4,8 @@
 
 If you are lazy and don't like to write SQL to create SQL view but you know AR use your skills to create views.
 
+Production-ready.
+
 ![Demo](docs/sql_view.gif?raw=true "Demo")
 
 ## Usage
