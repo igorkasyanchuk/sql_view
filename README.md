@@ -26,6 +26,8 @@ class ActiveUserView < SQLView::Model
   materialized
 
   schema -> { User.where(age: 18..60) }
+  # or
+  # schema -> { "SELECT * from users where active = true" }
 
   extend_model_with do
     # sample how you can extend it, similar to regular AR model
