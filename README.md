@@ -41,7 +41,7 @@ class ActiveUserView < SQLView::Model
 end
 ```
 
-Later with view you can work same way as with ActiveRecord class. For example
+Later with view you can work same way as with any model(ActiveRecord class). For example:
 
 ```ruby
 ActiveUserView.model.count
@@ -52,6 +52,8 @@ ActiveUserView.find(42
 # you can apply scopes, relations, methods, BUT add them in extend_model_with block
 
 ActiveUserView.model.by_role("admin").count
+ActiveUserView.where(role: "admin).exists?
+ActiveUserView.model.includes(:profile)
 ```
 
 If you need to refresh materialized view - `ActiveUserView.sql_view.refresh` (if you need to do it concerrently - `.refresh(concurrently: false)`.
