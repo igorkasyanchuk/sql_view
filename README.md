@@ -63,10 +63,10 @@ Later with view you can work same way as with any model(ActiveRecord class). For
 
 ```ruby
 ActiveUserView.model.count
-or
+№or
 ActiveUserView.count
 # ----
-ActiveUserView.find(42
+ActiveUserView.find(42)
 # you can apply scopes, relations, methods, BUT add them in extend_model_with block
 
 ActiveUserView.model.by_role("admin").count
