@@ -54,7 +54,7 @@ or the same but materialized:
 
 ```ruby
 class ActiveUserView < SQLView::Model
-  materiaized
+  materialized
   schema -> { "SELECT * FROM users WHERE active = TRUE" }
 end
 ```
