@@ -109,6 +109,22 @@ class OldUserView < SqlView::Model
 end
 ```
 
+## Materialized view + concurrent update
+
+1. add index
+
+```ruby
+  add_index SomeView.view_name, :user_id, unique: true
+```
+
+2. refresh with parameter
+
+```ruby
+  SomeView.sql_view.refresh(concurrently: true)
+```
+
+3. profit :)
+
 ## TODO
 
 - CI with different versions of Rails/Ruby
