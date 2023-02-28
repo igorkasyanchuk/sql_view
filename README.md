@@ -1,5 +1,7 @@
 # Rails + SQL View
 
+[![Listed on OpenSource-Heroes.com](https://opensource-heroes.com/badge-v1.svg)](https://opensource-heroes.com/r/igorkasyanchuk/sql_view)
+
 ## The easist way to add and work with SQL view in your app.
 
 If you are lazy and don't like to write SQL to create SQL view but you know AR use your skills to create views.
