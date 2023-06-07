@@ -10,9 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_02_15_124409) do
+ActiveRecord::Schema.define(version: 2023_06_07_072750) do
 
   # These are extensions that must be enabled in order to support this database
+  enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
 
   create_table "accounts", force: :cascade do |t|
@@ -47,7 +48,7 @@ ActiveRecord::Schema.define(version: 2022_02_15_124409) do
 
 
   create_sql_view "active_account_views", sql: <<-SQL
-    CREATE  VIEW "active_account_views" AS
+    CREATE VIEW "active_account_views" AS
        SELECT accounts.id,
       accounts.name,
       accounts.active,
@@ -58,7 +59,7 @@ ActiveRecord::Schema.define(version: 2022_02_15_124409) do
   SQL
 
   create_sql_view "deleted_account_views", sql: <<-SQL
-    CREATE  MATERIALIZED  VIEW "deleted_account_views" AS
+    CREATE MATERIALIZED VIEW "deleted_account_views" AS
        SELECT accounts.id,
       accounts.name,
       accounts.active,
@@ -69,7 +70,7 @@ ActiveRecord::Schema.define(version: 2022_02_15_124409) do
   SQL
 
   create_sql_view "bulgaria_views", sql: <<-SQL
-    CREATE  MATERIALIZED  VIEW "bulgaria_views" AS
+    CREATE MATERIALIZED VIEW "bulgaria_views" AS
        SELECT users.id,
       users.name,
       users.country,
@@ -80,7 +81,7 @@ ActiveRecord::Schema.define(version: 2022_02_15_124409) do
   SQL
 
   create_sql_view "monther_anna_views", sql: <<-SQL
-    CREATE  VIEW "monther_anna_views" AS
+    CREATE VIEW "monther_anna_views" AS
        SELECT parents.id,
       parents.name,
       parents.type,
@@ -91,7 +92,7 @@ ActiveRecord::Schema.define(version: 2022_02_15_124409) do
   SQL
 
   create_sql_view "active_worker_views", sql: <<-SQL
-    CREATE  VIEW "active_worker_views" AS
+    CREATE VIEW "active_worker_views" AS
        SELECT workers.id,
       workers.title,
       workers.jobable_id,
@@ -102,7 +103,7 @@ ActiveRecord::Schema.define(version: 2022_02_15_124409) do
   SQL
 
   create_sql_view "active_user_views", sql: <<-SQL
-    CREATE  MATERIALIZED  VIEW "active_user_views" AS
+    CREATE MATERIALIZED VIEW "active_user_views" AS
        SELECT users.id,
       users.name,
       users.country,

@@ -8,20 +8,21 @@ module SqlView
     class DBView < OpenStruct
       def to_schema
         <<-DEFINITION
-  create_sql_view "#{self.viewname}", sql: <<-\SQL
-    CREATE #{materialized_or_not} VIEW "#{self.viewname}" AS
+  create_sql_view "#{viewname}", sql: <<-\SQL
+    CREATE#{materialized_or_not}VIEW "#{viewname}" AS
     #{escaped_definition.indent(2)}
   SQL\n
         DEFINITION
       end
 
       private
+
       def materialized?
-        self.kind == "m"
+        kind == "m"
       end
 
       def materialized_or_not
-        materialized? ? " MATERIALIZED " : nil
+        materialized? ? " MATERIALIZED " : " "
       end
 
       def escaped_definition
@@ -35,40 +36,18 @@ module SqlView
     end
 
     def views(stream)
-      if dumpable_views_in_database.any?
-        stream.puts
-      end
+      stream.puts if sql_views.any?
 
-      dumpable_views_in_database.each do |viewname|
-        next if already_indexed?(viewname)
-        view = DBView.new(get_view_info(viewname))
+      sql_views.each do |view|
         stream.puts(view.to_schema)
-        indexes(viewname, stream)
+        indexes(view.viewname, stream)
       end
     end
 
     private
 
-    # make sure view was added one time, because somehow was adding views two times
-    def already_indexed?(viewname)
-      @already_indexed ||= []
-      return true if @already_indexed.include?(viewname)
-      @already_indexed << viewname
-      false
-    end
-
-    def dumpable_views_in_database
-      @dumpable_views_in_database ||= ActiveRecord::Base.connection.views.reject do |viewname|
-        ignored?(viewname)
-      end
-    end
-
-    def get_view_info(viewname)
-      views_schema.detect{|e| e['viewname'] == viewname}
-    end
-
-    def views_schema
-      @views_schema ||= ActiveRecord::Base.connection.execute(<<-SQL)
+    def sql_views
+      @sql_views ||= ActiveRecord::Base.connection.execute(<<-SQL)
         SELECT
           c.relname as viewname,
           pg_get_viewdef(c.oid) AS definition,
@@ -79,10 +58,11 @@ module SqlView
         WHERE
           c.relkind IN ('m', 'v')
           AND c.relname NOT IN (SELECT extname FROM pg_extension)
+          AND c.relname != 'pg_stat_statements_info'
           AND n.nspname = ANY (current_schemas(false))
         ORDER BY c.oid
       SQL
-    .to_a
+    .to_a.map(&DBView.method(:new)).reject { |view| ignored?(view.viewname) }
     end
 
     unless ActiveRecord::SchemaDumper.private_instance_methods(false).include?(:ignored?)
