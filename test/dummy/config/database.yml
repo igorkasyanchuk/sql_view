@@ -9,9 +9,9 @@ default: &default
   encoding: unicode
   host: localhost
   pool: 20
-  port: 5433
-  username: myapp
-  password: password1
+  port: 5432
+  username: admin
+  password:
 
 development:
   <<: *default
