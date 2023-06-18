@@ -68,7 +68,7 @@ module SqlView
       sql = <<-SQL
       REFRESH#{materialized_or_not}VIEW#{concurrently_or_not}#{parent.view_name};
       SQL
-      execute(sql)
+      execute(sql, log: false)
     end
 
     def up
@@ -88,8 +88,8 @@ module SqlView
       execute(sql)
     end
 
-    def execute(sql)
-      SqlView.log sql
+    def execute(sql, log: true)
+      SqlView.log(sql) if log
       ActiveRecord::Base.connection.execute sql#.wp
     end
 
@@ -103,6 +103,7 @@ module SqlView
 
   class ClassBuilder
     def ClassBuilder.create_model(parent)
+      class_name = "#{parent}Model"
       klass = Class.new(ActiveRecord::Base) do
         def self.model_name
           ActiveModel::Name.new(self, nil, parent.view_name)
@@ -120,10 +121,11 @@ module SqlView
       # because of the error undefined scan for nil class
       klass.class_eval %Q{
         def self.name
-          "#{parent.class}"
+          "#{class_name}"
         end
       }
-      klass
+      Object.const_set(class_name, klass) unless const_defined?(class_name)
+      Object.const_get(class_name)
     end
   end
 

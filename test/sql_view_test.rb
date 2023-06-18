@@ -61,6 +61,25 @@ class SqlViewTest < ActiveSupport::TestCase
     assert anna, ActiveWorkerView.model.first.jobable
   end
 
+  test 'association 1' do
+    account = Account.create
+    user = User.create(account: account)
+    assert account.account_stat_view.present?
+  end
+
+  test 'association 2' do
+    account = Account.create
+    user = User.create(account: account)
+    assert_equal account, Account.joins(:account_stat_view).where(id: account.id).first
+    assert_equal account, Account.joins(:account_stat_view).where(id: account.id).where("account_stat_view_views.factor > 0").first
+    assert_equal 0, account.active_users.count
+  end
+
+  test 'association 3' do
+    account = Account.create
+    assert_equal "ActiveUserViewModel", account.active_users.build.class.to_s
+  end
+
   # test 'migration' do
   #   a = User.create(age: 20)
   #   a = User.create(age: 30)
