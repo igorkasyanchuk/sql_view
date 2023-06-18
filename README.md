@@ -78,6 +78,18 @@ ActiveUserView.model.includes(:profile)
 
 If you need to refresh materialized view - `ActiveUserView.sql_view.refresh` (if you need to do it concerrently - `.refresh(concurrently: false)`.
 
+It can also be used with your other models:
+
+```ruby
+class Account < ApplicationRecord
+  has_many :users
+
+  has_one :account_stat_view, class_name: AccountStatViewView.model.to_s, foreign_key: :account_id
+  has_many :active_users, join_table: :active_users_views, class_name: ActiveUserView.model.to_s, foreign_key: :account_id
+end
+```
+
+
 More examples in this file: `./test/sql_view_test.rb`
 
 ## Installation

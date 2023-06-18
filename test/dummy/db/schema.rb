@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_06_07_072750) do
+ActiveRecord::Schema.define(version: 2023_06_18_104439) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
@@ -36,6 +36,7 @@ ActiveRecord::Schema.define(version: 2023_06_07_072750) do
     t.integer "age"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.integer "account_id"
   end
 
   create_table "workers", force: :cascade do |t|
@@ -46,17 +47,6 @@ ActiveRecord::Schema.define(version: 2023_06_07_072750) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
-
-  create_sql_view "active_account_views", sql: <<-SQL
-    CREATE VIEW "active_account_views" AS
-       SELECT accounts.id,
-      accounts.name,
-      accounts.active,
-      accounts.created_at,
-      accounts.updated_at
-     FROM accounts
-    WHERE (accounts.active = true);
-  SQL
 
   create_sql_view "deleted_account_views", sql: <<-SQL
     CREATE MATERIALIZED VIEW "deleted_account_views" AS
@@ -102,6 +92,24 @@ ActiveRecord::Schema.define(version: 2023_06_07_072750) do
      FROM workers;
   SQL
 
+  create_sql_view "account_stat_view_views", sql: <<-SQL
+    CREATE VIEW "account_stat_view_views" AS
+       SELECT accounts.id AS account_id,
+      random() AS factor
+     FROM accounts;
+  SQL
+
+  create_sql_view "active_account_views", sql: <<-SQL
+    CREATE VIEW "active_account_views" AS
+       SELECT accounts.id,
+      accounts.name,
+      accounts.active,
+      accounts.created_at,
+      accounts.updated_at
+     FROM accounts
+    WHERE (accounts.active = true);
+  SQL
+
   create_sql_view "active_user_views", sql: <<-SQL
     CREATE MATERIALIZED VIEW "active_user_views" AS
        SELECT users.id,
@@ -109,7 +117,8 @@ ActiveRecord::Schema.define(version: 2023_06_07_072750) do
       users.country,
       users.age,
       users.created_at,
-      users.updated_at
+      users.updated_at,
+      users.account_id
      FROM users
     WHERE ((users.age >= 18) AND (users.age <= 60));
   SQL
